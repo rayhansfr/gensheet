@@ -16,8 +16,8 @@ export default function Home() {
             <Link href="/auth/signin">
               <Button variant="ghost">Sign In</Button>
             </Link>
-            <Link href="/dashboard">
-              <Button>Dashboard</Button>
+            <Link href="/auth/signup">
+              <Button>Get Started</Button>
             </Link>
           </nav>
         </div>
@@ -38,14 +38,14 @@ export default function Home() {
             Perfect for manufacturing, construction, healthcare, IT, and more.
           </p>
           <div className="flex gap-4 justify-center">
-            <Link href="/dashboard">
+            <Link href="/auth/signup">
               <Button size="lg" className="text-lg px-8">
-                Get Started
+                Start Free Trial
               </Button>
             </Link>
-            <Link href="/checksheets/create">
+            <Link href="/demo">
               <Button size="lg" variant="outline" className="text-lg px-8">
-                Create Checksheet
+                View Demo
               </Button>
             </Link>
           </div>
@@ -133,9 +133,9 @@ export default function Home() {
           <p className="text-xl mb-8 opacity-90">
             Join thousands of teams using GenSheet to streamline their operations.
           </p>
-          <Link href="/dashboard">
+          <Link href="/auth/signup">
             <Button size="lg" variant="secondary" className="text-lg px-8">
-              Try GenSheet Now
+              Create Free Account
             </Button>
           </Link>
         </div>
