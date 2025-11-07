@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Swal from 'sweetalert2'
 import DashboardLayout from '@/components/DashboardLayout'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -101,9 +102,18 @@ export default function ChecksheetDetailPage() {
   }
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this checksheet? This action cannot be undone.')) {
-      return
-    }
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "This checksheet will be permanently deleted. This action cannot be undone!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    })
+
+    if (!result.isConfirmed) return
 
     setDeleting(true)
     try {
@@ -112,13 +122,28 @@ export default function ChecksheetDetailPage() {
       })
       
       if (res.ok) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Deleted!',
+          text: 'Checksheet has been deleted successfully.',
+          timer: 2000,
+          showConfirmButton: false
+        })
         router.push('/checksheets')
       } else {
-        alert('Failed to delete checksheet')
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed',
+          text: 'Failed to delete checksheet',
+        })
       }
     } catch (error) {
       console.error('Error deleting checksheet:', error)
-      alert('Error deleting checksheet')
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error deleting checksheet',
+      })
     } finally {
       setDeleting(false)
     }
@@ -132,13 +157,28 @@ export default function ChecksheetDetailPage() {
       
       if (res.ok) {
         const newChecksheet = await res.json()
+        await Swal.fire({
+          icon: 'success',
+          title: 'Duplicated!',
+          text: 'Checksheet has been duplicated successfully.',
+          timer: 2000,
+          showConfirmButton: false
+        })
         router.push(`/checksheets/${newChecksheet.id}`)
       } else {
-        alert('Failed to duplicate checksheet')
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed',
+          text: 'Failed to duplicate checksheet',
+        })
       }
     } catch (error) {
       console.error('Error duplicating checksheet:', error)
-      alert('Error duplicating checksheet')
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error duplicating checksheet',
+      })
     }
   }
 
@@ -152,12 +192,27 @@ export default function ChecksheetDetailPage() {
       
       if (res.ok) {
         fetchChecksheet()
+        Swal.fire({
+          icon: 'success',
+          title: 'Status Updated!',
+          text: `Status changed to ${newStatus}`,
+          timer: 2000,
+          showConfirmButton: false
+        })
       } else {
-        alert('Failed to update status')
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed',
+          text: 'Failed to update status',
+        })
       }
     } catch (error) {
       console.error('Error updating status:', error)
-      alert('Error updating status')
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error updating status',
+      })
     }
   }
 

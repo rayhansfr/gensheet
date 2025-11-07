@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import Swal from 'sweetalert2'
 import DashboardLayout from '@/components/DashboardLayout'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -90,12 +91,20 @@ export default function RunChecksheetPage() {
       } else {
         const errorData = await res.json().catch(() => ({ error: 'Failed to fetch' }))
         console.error('Failed to fetch checksheet:', res.status, errorData)
-        alert(`Error: ${errorData.error || 'Checksheet not found or you do not have access'}`)
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: errorData.error || 'Checksheet not found or you do not have access',
+        })
         router.push('/execute')
       }
     } catch (error) {
       console.error('Error fetching checksheet:', error)
-      alert('Error loading checksheet. Please try again.')
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error loading checksheet. Please try again.',
+      })
       router.push('/execute')
     } finally {
       setLoading(false)
@@ -154,13 +163,28 @@ export default function RunChecksheetPage() {
 
       if (res.ok) {
         const result = await res.json()
+        await Swal.fire({
+          icon: 'success',
+          title: 'Checksheet Submitted!',
+          text: 'Your checksheet has been completed successfully.',
+          timer: 2000,
+          showConfirmButton: false
+        })
         router.push(`/results/${result.id}`)
       } else {
-        alert('Failed to submit checksheet')
+        Swal.fire({
+          icon: 'error',
+          title: 'Submission Failed',
+          text: 'Failed to submit checksheet',
+        })
       }
     } catch (error) {
       console.error('Error submitting checksheet:', error)
-      alert('Error submitting checksheet')
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error submitting checksheet',
+      })
     } finally {
       setSubmitting(false)
     }

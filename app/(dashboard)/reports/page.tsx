@@ -67,7 +67,7 @@ export default async function ReportsPage() {
   })
 
   // Group by day
-  const dailyTrend = trendData.reduce((acc: any, item) => {
+  const dailyTrend = trendData.reduce((acc: Record<string, number>, item) => {
     const date = new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
     acc[date] = (acc[date] || 0) + item._count
     return acc

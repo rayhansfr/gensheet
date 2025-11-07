@@ -86,13 +86,6 @@ export default function Home() {
               </p>
             </div>
             <div className="p-6 border rounded-lg">
-              <Globe className="h-12 w-12 text-cyan-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-3">Multi-Language</h3>
-              <p className="text-gray-600">
-                Support for multiple languages to work globally across different regions.
-              </p>
-            </div>
-            <div className="p-6 border rounded-lg">
               <Shield className="h-12 w-12 text-red-600 mb-4" />
               <h3 className="text-xl font-semibold mb-3">Secure & Compliant</h3>
               <p className="text-gray-600">

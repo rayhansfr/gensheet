@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import Swal from 'sweetalert2'
 import DashboardLayout from '@/components/DashboardLayout'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -112,13 +113,29 @@ export default function UsersPage() {
           organizationId: ''
         })
         fetchUsers()
+        
+        Swal.fire({
+          icon: 'success',
+          title: 'User Created!',
+          text: 'New user has been created successfully.',
+          timer: 2000,
+          showConfirmButton: false
+        })
       } else {
         const error = await res.json()
-        alert(error.error || 'Failed to create user')
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed to Create User',
+          text: error.error || 'An error occurred while creating the user.',
+        })
       }
     } catch (error) {
       console.error('Error creating user:', error)
-      alert('Failed to create user')
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An unexpected error occurred.',
+      })
     } finally {
       setSaving(false)
     }
@@ -153,20 +170,47 @@ export default function UsersPage() {
         setShowEditModal(false)
         setSelectedUser(null)
         fetchUsers()
+        
+        Swal.fire({
+          icon: 'success',
+          title: 'User Updated!',
+          text: 'User information has been updated successfully.',
+          timer: 2000,
+          showConfirmButton: false
+        })
       } else {
         const error = await res.json()
-        alert(error.error || 'Failed to update user')
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed to Update User',
+          text: error.error || 'An error occurred while updating the user.',
+        })
       }
     } catch (error) {
       console.error('Error updating user:', error)
-      alert('Failed to update user')
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An unexpected error occurred.',
+      })
     } finally {
       setSaving(false)
     }
   }
 
   const handleDeleteUser = async (userId: string) => {
-    if (!confirm('Are you sure you want to delete this user?')) return
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    })
+
+    if (!result.isConfirmed) return
 
     try {
       const res = await fetch(`/api/users/${userId}`, {
@@ -175,13 +219,29 @@ export default function UsersPage() {
 
       if (res.ok) {
         fetchUsers()
+        
+        Swal.fire({
+          icon: 'success',
+          title: 'Deleted!',
+          text: 'User has been deleted successfully.',
+          timer: 2000,
+          showConfirmButton: false
+        })
       } else {
         const error = await res.json()
-        alert(error.error || 'Failed to delete user')
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed to Delete User',
+          text: error.error || 'An error occurred while deleting the user.',
+        })
       }
     } catch (error) {
       console.error('Error deleting user:', error)
-      alert('Failed to delete user')
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An unexpected error occurred.',
+      })
     }
   }
 

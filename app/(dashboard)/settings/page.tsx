@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import Swal from 'sweetalert2'
 import DashboardLayout from '@/components/DashboardLayout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -45,14 +46,28 @@ export default function SettingsPage() {
 
       if (res.ok) {
         await update() // Refresh session
-        alert('Profile updated successfully!')
+        Swal.fire({
+          icon: 'success',
+          title: 'Profile Updated!',
+          text: 'Your profile has been updated successfully.',
+          timer: 2000,
+          showConfirmButton: false
+        })
       } else {
         const error = await res.json()
-        alert(error.error || 'Failed to update profile')
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed',
+          text: error.error || 'Failed to update profile',
+        })
       }
     } catch (error) {
       console.error('Error updating profile:', error)
-      alert('Failed to update profile')
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to update profile',
+      })
     } finally {
       setIsSaving(false)
     }
@@ -67,7 +82,16 @@ export default function SettingsPage() {
   ]
 
   if (status === 'loading' || !session?.user) {
-    return <div>Loading...</div>
+    return (
+      <DashboardLayout user={session?.user}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+            <div className="h-96 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </DashboardLayout>
+    )
   }
 
   return (

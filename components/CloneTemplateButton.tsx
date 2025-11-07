@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Swal from 'sweetalert2'
 import { Button } from '@/components/ui/button'
 import { Copy, Loader2 } from 'lucide-react'
 
@@ -30,14 +31,29 @@ export default function CloneTemplateButton({
 
       if (res.ok) {
         const checksheet = await res.json()
+        await Swal.fire({
+          icon: 'success',
+          title: 'Template Cloned!',
+          text: 'Template has been cloned to your checksheets.',
+          timer: 2000,
+          showConfirmButton: false
+        })
         router.push(`/checksheets/create?id=${checksheet.id}`)
       } else {
         const error = await res.json()
-        alert(error.error || 'Failed to clone template')
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed',
+          text: error.error || 'Failed to clone template',
+        })
       }
     } catch (error) {
       console.error('Error cloning template:', error)
-      alert('Failed to clone template')
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to clone template',
+      })
     } finally {
       setIsCloning(false)
     }
