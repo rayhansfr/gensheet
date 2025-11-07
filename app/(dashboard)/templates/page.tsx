@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Search, Star, Copy, FileText, Factory, Building2, Heart, Truck, Users, Shield, Zap } from 'lucide-react'
+import CloneTemplateButton from '@/components/CloneTemplateButton'
 
 const CATEGORIES = [
   { id: 'manufacturing', name: 'Manufacturing', icon: Factory, color: 'bg-teal-500' },
@@ -21,7 +22,7 @@ const CATEGORIES = [
 export default async function TemplatesPage({
   searchParams,
 }: {
-  searchParams: { search?: string; category?: string }
+  searchParams: Promise<{ search?: string; category?: string }>
 }) {
   const session = await auth()
   
@@ -29,8 +30,9 @@ export default async function TemplatesPage({
     redirect('/auth/signin')
   }
 
-  const search = searchParams.search || ''
-  const categoryFilter = searchParams.category || 'all'
+  const params = await searchParams
+  const search = params.search || ''
+  const categoryFilter = params.category || 'all'
 
   // Fetch best practice templates
   const where: any = { isPublic: true }
@@ -72,7 +74,7 @@ export default async function TemplatesPage({
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Browse by Category</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
             <Link href="/templates?category=all">
-              <Card className={`border-0 shadow-md hover:shadow-lg transition-all cursor-pointer ${
+              <Card className={`border-0 shadow-md bg-white hover:shadow-lg transition-all cursor-pointer ${
                 categoryFilter === 'all' ? 'ring-2 ring-teal-500' : ''
               }`}>
                 <CardContent className="pt-6 text-center">
@@ -85,7 +87,7 @@ export default async function TemplatesPage({
             </Link>
             {CATEGORIES.map((cat) => (
               <Link key={cat.id} href={`/templates?category=${cat.id}`}>
-                <Card className={`border-0 shadow-md hover:shadow-lg transition-all cursor-pointer ${
+                <Card className={`border-0 bg-white h-full shadow-md hover:shadow-lg transition-all cursor-pointer ${
                   categoryFilter === cat.id ? 'ring-2 ring-teal-500' : ''
                 }`}>
                   <CardContent className="pt-6 text-center">
@@ -101,7 +103,7 @@ export default async function TemplatesPage({
         </div>
 
         {/* Search */}
-        <Card className="border-0 shadow-md mb-6">
+        <Card className="border-0 bg-white shadow-md mb-6">
           <CardContent className="pt-6">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -118,7 +120,7 @@ export default async function TemplatesPage({
 
         {/* Templates Grid */}
         {templates.length === 0 ? (
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg bg-white">
             <CardContent className="pt-12 pb-12">
               <div className="text-center text-gray-500">
                 <FileText className="h-16 w-16 mx-auto mb-4 text-gray-400" />
@@ -134,7 +136,7 @@ export default async function TemplatesPage({
             {templates.map((template: any) => {
               const category = CATEGORIES.find(c => c.id === template.category)
               return (
-                <Card key={template.id} className="border-0 shadow-md hover:shadow-xl transition-all duration-200 hover:-translate-y-1">
+                <Card key={template.id} className="border-0  bg-white shadow-md hover:shadow-xl transition-all duration-200 hover:-translate-y-1">
                   <CardContent className="pt-6">
                     {/* Category Badge */}
                     <div className="flex items-center justify-between mb-4">
@@ -183,13 +185,10 @@ export default async function TemplatesPage({
                           Preview
                         </Button>
                       </Link>
-                      <Button 
-                        className="flex-1 bg-gradient-to-r from-teal-500 to-green-500 hover:from-teal-600 hover:to-green-600"
-                        size="sm"
-                      >
-                        <Copy className="mr-2 h-4 w-4" />
-                        Use Template
-                      </Button>
+                      <CloneTemplateButton 
+                        templateId={template.id}
+                        className="flex-1"
+                      />
                     </div>
                   </CardContent>
                 </Card>
@@ -203,7 +202,7 @@ export default async function TemplatesPage({
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Popular This Month</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {['Daily Safety Inspection', 'Quality Control Check', 'Equipment Maintenance', 'Security Patrol'].map((title, idx) => (
-              <Card key={idx} className="border-0 shadow-md hover:shadow-lg transition-all cursor-pointer">
+              <Card key={idx} className="border-0 bg-white shadow-md hover:shadow-lg transition-all cursor-pointer">
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 rounded-full bg-gradient-to-r from-teal-500 to-green-500">

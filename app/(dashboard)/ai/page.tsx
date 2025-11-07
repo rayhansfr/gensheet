@@ -123,7 +123,7 @@ export default function AIAssistantPage() {
         </div>
 
         {/* Messages */}
-        <Card className="flex-1 border-0 shadow-lg overflow-hidden mb-4">
+        <Card className="flex-1 border-0 shadow-lg bg-white overflow-hidden mb-4">
           <CardContent className="p-6 h-full overflow-y-auto">
             <div className="space-y-6">
               {messages.map((message, index) => (
@@ -230,7 +230,7 @@ export default function AIAssistantPage() {
         </Card>
 
         {/* Input */}
-        <Card className="border-0 shadow-lg">
+        <Card className="border-0 bg-white shadow-lg">
           <CardContent className="p-4">
             <form onSubmit={handleSubmit} className="flex gap-4">
               <Input
@@ -243,7 +243,7 @@ export default function AIAssistantPage() {
               <Button 
                 type="submit" 
                 disabled={isGenerating || !input.trim()}
-                className="bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700"
+                className="bg-gradient-to-r text-white from-teal-500 to-green-500 hover:from-teal-600 hover:to-green-600"
               >
                 {isGenerating ? (
                   <Loader2 className="h-5 w-5 animate-spin" />

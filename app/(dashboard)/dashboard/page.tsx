@@ -106,7 +106,7 @@ export default async function DashboardPage() {
             </div>
             <div className="mt-4 sm:mt-0">
               <Link href="/checksheets/create">
-                <Button size="lg" className="bg-gradient-to-r from-teal-500 to-green-500 hover:from-teal-600 hover:to-green-600 shadow-lg">
+                <Button size="lg" className="bg-gradient-to-r text-white from-teal-500 to-green-500 hover:from-teal-600 hover:to-green-600 shadow-lg">
                   <Plus className="mr-2 h-5 w-5" />
                   Create New Checksheet
                 </Button>
@@ -118,7 +118,7 @@ export default async function DashboardPage() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat) => (
-            <Card key={stat.title} className="hover:shadow-lg transition-shadow duration-200 border-0 shadow-md">
+            <Card key={stat.title} className="hover:shadow-lg bg-white transition-shadow duration-200 border-0 shadow-md">
               <CardContent className="pt-6">
                 <div className="flex items-center">
                   <div className={`p-3 rounded-full ${stat.bgColor}`}>
@@ -190,7 +190,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Recent Checksheets */}
-        <Card className="border-0 shadow-lg">
+        <Card className="border-0 bg-white shadow-lg">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-900">Recent Checksheets</h2>
@@ -199,7 +199,7 @@ export default async function DashboardPage() {
               </Link>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-4 border-t border-gray-200 pt-4">
               {recentChecksheets.length === 0 ? (
                 <div className="text-center py-12 text-gray-500">
                   <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />

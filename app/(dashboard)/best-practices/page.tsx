@@ -190,7 +190,7 @@ export default async function BestPracticesPage() {
 
               <div className="grid md:grid-cols-3 gap-6">
                 {category.tips.map((tip, tipIdx) => (
-                  <Card key={tipIdx} className="border-0 shadow-md hover:shadow-lg transition-shadow">
+                  <Card key={tipIdx} className="border-0 bg-white shadow-md hover:shadow-lg transition-shadow">
                     <CardContent className="pt-6">
                       <div className="flex items-start justify-between mb-3">
                         <h3 className="font-bold text-lg text-gray-900">{tip.title}</h3>
@@ -211,27 +211,6 @@ export default async function BestPracticesPage() {
           ))}
         </div>
 
-        {/* Success Stories */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Success Stories</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            {SUCCESS_STORIES.map((story, idx) => (
-              <Card key={idx} className="border-0 shadow-md">
-                <CardContent className="pt-6">
-                  <div className="p-3 rounded-full bg-gradient-to-r from-teal-500 to-green-500 w-fit mb-4">
-                    <Award className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="font-bold text-lg text-gray-900 mb-2">{story.company}</h3>
-                  <p className="text-sm text-gray-500 mb-3">{story.industry}</p>
-                  <div className="p-3 bg-green-50 rounded-lg mb-3">
-                    <p className="text-green-700 font-semibold">{story.result}</p>
-                  </div>
-                  <p className="text-sm text-gray-600">{story.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
 
         {/* CTA Section */}
         <Card className="border-0 shadow-lg bg-gradient-to-r from-teal-500 to-green-500">

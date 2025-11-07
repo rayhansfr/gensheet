@@ -11,7 +11,7 @@ import { Plus, FileText, Grid3x3, List, Search, Filter, Clock, CheckCircle, XCir
 export default async function ChecksheetsPage({
   searchParams,
 }: {
-  searchParams: { search?: string; status?: string; category?: string; view?: string }
+  searchParams: Promise<{ search?: string; status?: string; category?: string; view?: string }>
 }) {
   const session = await auth()
   
@@ -19,10 +19,11 @@ export default async function ChecksheetsPage({
     redirect('/auth/signin')
   }
 
-  const search = searchParams.search || ''
-  const status = searchParams.status || 'all'
-  const category = searchParams.category || 'all'
-  const view = searchParams.view || 'grid'
+  const params = await searchParams
+  const search = params.search || ''
+  const status = params.status || 'all'
+  const category = params.category || 'all'
+  const view = params.view || 'grid'
 
   // Build filter conditions
   const where: any = {}
@@ -83,7 +84,7 @@ export default async function ChecksheetsPage({
             </div>
             <div className="mt-4 sm:mt-0">
               <Link href="/checksheets/create">
-                <Button size="lg" className="bg-gradient-to-r from-teal-500 to-green-500 hover:from-teal-600 hover:to-green-600 shadow-lg">
+                <Button size="lg" className="bg-gradient-to-r text-white from-teal-500 to-green-500 hover:from-teal-600 hover:to-green-600 shadow-lg">
                   <Plus className="mr-2 h-5 w-5" />
                   Create New
                 </Button>
@@ -94,7 +95,7 @@ export default async function ChecksheetsPage({
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 bg-white shadow-md">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -106,7 +107,7 @@ export default async function ChecksheetsPage({
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 bg-white shadow-md">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -118,7 +119,7 @@ export default async function ChecksheetsPage({
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 bg-white shadow-md">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -130,7 +131,7 @@ export default async function ChecksheetsPage({
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 bg-white shadow-md">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -144,7 +145,7 @@ export default async function ChecksheetsPage({
         </div>
 
         {/* Filters */}
-        <Card className="border-0 shadow-md mb-6">
+        <Card className="border-0 bg-white shadow-md mb-6">
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row gap-4">
               {/* Search */}
@@ -190,7 +191,7 @@ export default async function ChecksheetsPage({
 
         {/* Checksheets Grid/List */}
         {checksheets.length === 0 ? (
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg bg-white">
             <CardContent className="pt-12 pb-12">
               <div className="text-center text-gray-500">
                 <FileText className="h-16 w-16 mx-auto mb-4 text-gray-400" />
@@ -211,7 +212,7 @@ export default async function ChecksheetsPage({
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {checksheets.map((checksheet: any) => (
               <Link key={checksheet.id} href={`/checksheets/${checksheet.id}`}>
-                <Card className="border-0 shadow-md hover:shadow-xl transition-all duration-200 hover:-translate-y-1 cursor-pointer h-full">
+                <Card className="border-0 bg-white shadow-md hover:shadow-xl transition-all duration-200 hover:-translate-y-1 cursor-pointer h-full">
                   <CardContent className="pt-6">
                     {/* Status Badge */}
                     <div className="flex items-center justify-between mb-4">

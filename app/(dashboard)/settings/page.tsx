@@ -8,19 +8,55 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { User, Building2, Bell, Shield, Globe, Save, Mail, Phone } from 'lucide-react'
+import { User, Building2, Bell, Shield, Globe, Save, Mail, Phone, Loader2 } from 'lucide-react'
 
 export default function SettingsPage() {
   const router = useRouter()
-  const { data: session, status } = useSession()
+  const { data: session, status, update } = useSession()
   const [activeTab, setActiveTab] = useState('profile')
   const [isSaving, setIsSaving] = useState(false)
+  const [profileData, setProfileData] = useState({
+    name: '',
+    phone: '',
+    image: ''
+  })
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/auth/signin')
     }
-  }, [status, router])
+    if (session?.user) {
+      setProfileData({
+        name: session.user.name || '',
+        phone: '',
+        image: session.user.image || ''
+      })
+    }
+  }, [status, router, session])
+
+  const handleSaveProfile = async () => {
+    setIsSaving(true)
+    try {
+      const res = await fetch('/api/user/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(profileData)
+      })
+
+      if (res.ok) {
+        await update() // Refresh session
+        alert('Profile updated successfully!')
+      } else {
+        const error = await res.json()
+        alert(error.error || 'Failed to update profile')
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      alert('Failed to update profile')
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   const tabs = [
     { id: 'profile', name: 'Profile', icon: User },
@@ -48,7 +84,7 @@ export default function SettingsPage() {
         <div className="grid lg:grid-cols-4 gap-6">
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <Card className="border-0 shadow-md">
+            <Card className="border-0 bg-white shadow-md">
               <CardContent className="pt-6">
                 <nav className="space-y-1">
                   {tabs.map((tab) => (
@@ -72,7 +108,7 @@ export default function SettingsPage() {
 
           {/* Content */}
           <div className="lg:col-span-3">
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 bg-white shadow-lg">
               <CardContent className="pt-6">
                 {/* Profile Settings */}
                 {activeTab === 'profile' && (
@@ -90,7 +126,8 @@ export default function SettingsPage() {
                           <Label htmlFor="name">Full Name</Label>
                           <Input
                             id="name"
-                            defaultValue={session.user.name || ''}
+                            value={profileData.name}
+                            onChange={(e) => setProfileData({...profileData, name: e.target.value})}
                             className="mt-2 bg-white border-gray-300"
                           />
                         </div>
@@ -99,7 +136,7 @@ export default function SettingsPage() {
                           <Input
                             id="email"
                             type="email"
-                            defaultValue={session.user.email || ''}
+                            value={session.user.email || ''}
                             className="mt-2 bg-white border-gray-300"
                             disabled
                           />
@@ -112,6 +149,8 @@ export default function SettingsPage() {
                           <Input
                             id="phone"
                             type="tel"
+                            value={profileData.phone}
+                            onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
                             placeholder="+1 (555) 000-0000"
                             className="mt-2 bg-white border-gray-300"
                           />
@@ -132,6 +171,8 @@ export default function SettingsPage() {
                         <Input
                           id="avatar"
                           type="url"
+                          value={profileData.image}
+                          onChange={(e) => setProfileData({...profileData, image: e.target.value})}
                           placeholder="https://example.com/avatar.jpg"
                           className="mt-2 bg-white border-gray-300"
                         />
@@ -139,9 +180,22 @@ export default function SettingsPage() {
                     </div>
 
                     <div className="flex justify-end pt-4 border-t border-gray-200">
-                      <Button className="bg-gradient-to-r from-teal-500 to-green-500 hover:from-teal-600 hover:to-green-600">
-                        <Save className="mr-2 h-4 w-4" />
-                        Save Changes
+                      <Button 
+                        onClick={handleSaveProfile}
+                        disabled={isSaving}
+                        className="bg-gradient-to-r text-white from-teal-500 to-green-500 hover:from-teal-600 hover:to-green-600"
+                      >
+                        {isSaving ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="mr-2 h-4 w-4" />
+                            Save Changes
+                          </>
+                        )}
                       </Button>
                     </div>
                   </div>

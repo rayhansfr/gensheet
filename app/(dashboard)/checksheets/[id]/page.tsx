@@ -76,6 +76,7 @@ export default function ChecksheetDetailPage() {
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState(false)
   const [activeTab, setActiveTab] = useState<'overview' | 'checkpoints' | 'results'>('overview')
+  const [settingsMenuOpen, setSettingsMenuOpen] = useState(false)
 
   useEffect(() => {
     if (params.id) {
@@ -248,55 +249,70 @@ export default function ChecksheetDetailPage() {
             
             <div className="flex items-center gap-2">
               <Link href={`/execute/run?checksheet=${checksheet.id}`}>
-                <Button className="bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700">
+                <Button className="bg-gradient-to-r text-white from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700">
                   <Play className="h-4 w-4 mr-2" />
                   Run Checksheet
                 </Button>
               </Link>
               
-              <div className="relative group">
-                <Button variant="outline">
+              <div className="relative">
+                <Button 
+                  variant="outline"
+                  onClick={() => setSettingsMenuOpen(!settingsMenuOpen)}
+                  onMouseEnter={() => setSettingsMenuOpen(true)}
+                >
                   <Settings className="h-4 w-4" />
                 </Button>
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 hidden group-hover:block z-10">
-                  <Link href={`/checksheets/${checksheet.id}/edit`}>
-                    <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
-                      <Edit className="h-4 w-4" />
-                      Edit
+                {settingsMenuOpen && (
+                  <div 
+                    className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10"
+                    onMouseLeave={() => setSettingsMenuOpen(false)}
+                  >
+                    <Link href={`/checksheets/${checksheet.id}/edit`}>
+                      <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+                        <Edit className="h-4 w-4" />
+                        Edit
+                      </button>
+                    </Link>
+                    <button
+                      onClick={handleDuplicate}
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    >
+                      <Copy className="h-4 w-4" />
+                      Duplicate
                     </button>
-                  </Link>
-                  <button
-                    onClick={handleDuplicate}
-                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                  >
-                    <Copy className="h-4 w-4" />
-                    Duplicate
-                  </button>
-                  <button
-                    onClick={() => handleStatusChange(checksheet.status === 'ACTIVE' ? 'ARCHIVED' : 'ACTIVE')}
-                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                  >
-                    <Archive className="h-4 w-4" />
-                    {checksheet.status === 'ACTIVE' ? 'Archive' : 'Activate'}
-                  </button>
-                  <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
-                    <Share2 className="h-4 w-4" />
-                    Share
-                  </button>
-                  <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
-                    <Download className="h-4 w-4" />
-                    Export
-                  </button>
-                  <hr className="my-1 border-gray-200" />
-                  <button
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    {deleting ? 'Deleting...' : 'Delete'}
-                  </button>
-                </div>
+                    <button
+                      onClick={() => {
+                        handleStatusChange(checksheet.status === 'ACTIVE' ? 'ARCHIVED' : 'ACTIVE')
+                        setSettingsMenuOpen(false)
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    >
+                      <Archive className="h-4 w-4" />
+                      {checksheet.status === 'ACTIVE' ? 'Archive' : 'Activate'}
+                    </button>
+                    <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+                      <Share2 className="h-4 w-4" />
+                      Share
+                    </button>
+                    <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+                      <Download className="h-4 w-4" />
+                      Export
+                    </button>
+                    <hr className="my-1 border-gray-200" />
+                    <button
+                      onClick={() => {
+                        handleDelete()
+                        setSettingsMenuOpen(false)
+                      }}
+                      disabled={deleting}
+                      className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      {deleting ? 'Deleting...' : 'Delete'}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

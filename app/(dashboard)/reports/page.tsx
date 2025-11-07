@@ -6,6 +6,7 @@ import DashboardLayout from '@/components/DashboardLayout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { BarChart3, Download, FileText, TrendingUp, TrendingDown, Activity, Calendar, Filter } from 'lucide-react'
+import ReportsCharts from '@/components/ReportsCharts'
 
 export default async function ReportsPage() {
   const session = await auth()
@@ -52,6 +53,47 @@ export default async function ReportsPage() {
 
   const completionRate = totalResults > 0 ? Math.round((completedResults / totalResults) * 100) : 0
 
+  // Fetch trend data (last 30 days)
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+  const trendData = await prisma.checksheetResult.groupBy({
+    by: ['createdAt'],
+    where: {
+      createdAt: { gte: thirtyDaysAgo },
+      ...(session.user.role === 'INSPECTOR' ? { inspectorId: session.user.id } : {})
+    },
+    _count: true,
+  })
+
+  // Group by day
+  const dailyTrend = trendData.reduce((acc: any, item) => {
+    const date = new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    acc[date] = (acc[date] || 0) + item._count
+    return acc
+  }, {})
+
+  const trendChartData = Object.entries(dailyTrend).map(([date, count]) => ({
+    date,
+    executions: count
+  })).slice(-7) // Last 7 days
+
+  // Fetch category distribution
+  const categoryData = await prisma.checksheet.groupBy({
+    by: ['category'],
+    _count: true,
+    where: session.user.role === 'INSPECTOR' ? {
+      creatorId: session.user.id
+    } : {}
+  })
+
+  const categoryChartData = categoryData
+    .filter(item => item.category)
+    .map(item => ({
+      category: item.category || 'Other',
+      count: item._count
+    }))
+
   return (
     <DashboardLayout user={session.user}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -79,7 +121,7 @@ export default async function ReportsPage() {
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 bg-white shadow-md">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm font-medium text-gray-600">Total Executions</p>
@@ -93,7 +135,7 @@ export default async function ReportsPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 bg-white shadow-md">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm font-medium text-gray-600">Completed</p>
@@ -107,7 +149,7 @@ export default async function ReportsPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 bg-white shadow-md">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm font-medium text-gray-600">In Progress</p>
@@ -121,7 +163,7 @@ export default async function ReportsPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 bg-white shadow-md">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm font-medium text-gray-600">Completion Rate</p>
@@ -137,42 +179,13 @@ export default async function ReportsPage() {
         </div>
 
         {/* Charts Section */}
-        <div className="grid lg:grid-cols-2 gap-6 mb-8">
-          {/* Execution Trend */}
-          <Card className="border-0 shadow-lg">
-            <CardContent className="pt-6">
-              <h3 className="font-bold text-lg text-gray-900 mb-4">Execution Trend</h3>
-              <div className="h-64 flex items-center justify-center bg-gradient-to-br from-teal-50 to-green-50 rounded-lg">
-                <div className="text-center">
-                  <BarChart3 className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-500">Chart visualization coming soon</p>
-                  <p className="text-sm text-gray-400 mt-2">
-                    Showing last 30 days activity
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Category Distribution */}
-          <Card className="border-0 shadow-lg">
-            <CardContent className="pt-6">
-              <h3 className="font-bold text-lg text-gray-900 mb-4">Category Distribution</h3>
-              <div className="h-64 flex items-center justify-center bg-gradient-to-br from-teal-50 to-green-50 rounded-lg">
-                <div className="text-center">
-                  <Activity className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-500">Chart visualization coming soon</p>
-                  <p className="text-sm text-gray-400 mt-2">
-                    Breakdown by industry category
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <ReportsCharts 
+          trendData={trendChartData} 
+          categoryData={categoryChartData}
+        />
 
         {/* Top Checksheets */}
-        <Card className="border-0 shadow-lg mb-8">
+        <Card className="border-0 shadow-lg mb-8 bg-white">
           <CardContent className="pt-6">
             <h3 className="font-bold text-lg text-gray-900 mb-4">Most Used Checksheets</h3>
             <div className="space-y-3">
@@ -200,7 +213,7 @@ export default async function ReportsPage() {
         </Card>
 
         {/* Recent Activity */}
-        <Card className="border-0 shadow-lg">
+        <Card className="border-0 shadow-lg bg-white">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-lg text-gray-900">Recent Activity</h3>

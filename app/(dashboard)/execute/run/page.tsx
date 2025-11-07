@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import PhotoUpload from '@/components/PhotoUpload'
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -146,6 +147,7 @@ export default function RunChecksheetPage() {
           checksheetId: checksheet.id,
           location,
           notes,
+          status: 'COMPLETED',
           responses: Object.values(responses).filter(r => r.value !== '')
         })
       })
@@ -327,6 +329,21 @@ export default function RunChecksheetPage() {
                       </button>
                     ))}
                   </div>
+                )}
+
+                {(currentCheckpoint.fieldType === 'PHOTO') && (
+                  <PhotoUpload
+                    value={responses[currentCheckpoint.id]?.photoUrl}
+                    onChange={(url) => {
+                      handleResponseChange(currentCheckpoint.id, 'photoUrl', url)
+                      // Also set value to indicate photo was taken
+                      handleResponseChange(currentCheckpoint.id, 'value', 'Photo uploaded')
+                    }}
+                    onRemove={() => {
+                      handleResponseChange(currentCheckpoint.id, 'photoUrl', '')
+                      handleResponseChange(currentCheckpoint.id, 'value', '')
+                    }}
+                  />
                 )}
 
                 {/* Notes for this checkpoint */}

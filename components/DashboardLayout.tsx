@@ -4,6 +4,7 @@ import { useState, useEffect, ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
+import GlobalSearch from './GlobalSearch'
 import { 
   Home, 
   PlusCircle, 
@@ -37,27 +38,26 @@ interface DashboardLayoutProps {
   }
 }
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: Home },
-  { name: 'Create Checksheet', href: '/checksheets/create', icon: PlusCircle },
-  { name: 'My Checksheets', href: '/checksheets', icon: ClipboardList },
-  { name: 'Templates', href: '/templates', icon: Layers },
-  { name: 'AI Assistant', href: '/ai', icon: Bot },
-  { name: 'Execute', href: '/execute', icon: PlayCircle },
-  { name: 'Reports', href: '/reports', icon: BarChart3 },
-  { name: 'Best Practices', href: '/best-practices', icon: Award },
-  { name: 'Settings', href: '/settings', icon: Settings },
-]
+const getNavigation = (userRole?: string) => {
+  const baseNav = [
+    { name: 'Dashboard', href: '/dashboard', icon: Home },
+    { name: 'Create Checksheet', href: '/checksheets/create', icon: PlusCircle },
+    { name: 'My Checksheets', href: '/checksheets', icon: ClipboardList },
+    { name: 'Templates', href: '/templates', icon: Layers },
+    { name: 'Execute', href: '/execute', icon: PlayCircle },
+    { name: 'Reports', href: '/reports', icon: BarChart3 },
+    { name: 'Best Practices', href: '/best-practices', icon: Award },
+  ]
 
-const languages = [
-  { code: 'en', name: 'EN', fullName: 'English' },
-  { code: 'id', name: 'ID', fullName: 'Indonesian' },
-  { code: 'es', name: 'ES', fullName: 'Spanish' },
-  { code: 'fr', name: 'FR', fullName: 'French' },
-  { code: 'de', name: 'DE', fullName: 'German' },
-  { code: 'zh', name: 'ZH', fullName: 'Chinese' },
-  { code: 'ja', name: 'JA', fullName: 'Japanese' },
-]
+  // Add User Management only for ADMIN users
+  if (userRole === 'ADMIN') {
+    baseNav.push({ name: 'User Management', href: '/users', icon: Users })
+  }
+
+  baseNav.push({ name: 'Settings', href: '/settings', icon: Settings })
+
+  return baseNav
+}
 
 export default function DashboardLayout({ children, user }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -66,6 +66,7 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
   const [langMenuOpen, setLangMenuOpen] = useState(false)
   const [selectedLang, setSelectedLang] = useState('en')
   const pathname = usePathname()
+  const navigation = getNavigation(user?.role)
 
   // Initialize dark mode from localStorage
   useEffect(() => {
@@ -116,7 +117,7 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
                     </div>
                   </div>
                   <div className="ml-3">
-                    <h1 className="text-xl font-bold text-gray-900">GenSheet Master</h1>
+                    <h1 className="text-xl font-bold text-gray-900">GenSheet</h1>
                     <p className="text-xs text-gray-500">Global Industry Solutions</p>
                   </div>
                 </div>
@@ -125,43 +126,8 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
               {/* Right side */}
               <div className="flex items-center space-x-4">
                 {/* Search */}
-                <div className="relative hidden md:block">
-                  <input
-                    type="text"
-                    placeholder="Search checksheets..."
-                    className="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  />
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                    <Search className="h-4 w-4 text-gray-400" />
-                  </div>
-                </div>
-
-                {/* Language Selector */}
-                <div className="relative">
-                  <button
-                    onClick={() => setLangMenuOpen(!langMenuOpen)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none"
-                  >
-                    <Globe className="h-4 w-4" />
-                    <span className="text-sm font-medium">{selectedLang.toUpperCase()}</span>
-                    <ChevronDown className="h-4 w-4" />
-                  </button>
-                  {langMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
-                      {languages.map((lang) => (
-                        <button
-                          key={lang.code}
-                          onClick={() => {
-                            setSelectedLang(lang.code)
-                            setLangMenuOpen(false)
-                          }}
-                          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          {lang.fullName}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                <div className="hidden md:block">
+                  <GlobalSearch />
                 </div>
 
                 {/* Notifications */}

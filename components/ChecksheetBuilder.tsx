@@ -282,8 +282,8 @@ export default function ChecksheetBuilder({ initialData, onSave }: ChecksheetBui
   ]
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6">
-      <Card>
+    <div className="mx-auto p-6 space-y-6">
+      <Card className='bg-white'>
         <CardHeader>
           <CardTitle>AI Checksheet Generator</CardTitle>
           <CardDescription>
@@ -308,7 +308,7 @@ export default function ChecksheetBuilder({ initialData, onSave }: ChecksheetBui
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className='bg-white'>
         <CardHeader>
           <CardTitle>Checksheet Details</CardTitle>
         </CardHeader>
@@ -352,7 +352,7 @@ export default function ChecksheetBuilder({ initialData, onSave }: ChecksheetBui
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className='bg-white'>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
